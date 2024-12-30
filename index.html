@@ -119,6 +119,7 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
+            touch-action: none;
         }
 
         .ascii-container.grabbing {
@@ -2657,6 +2658,33 @@ _;'\`;--''\`___,,--''  .\`. \`.\`. \`. \`. \`.;\`. \`\`"ZZZ8
         asciiContainer.addEventListener('mousedown', startDragging);
         document.addEventListener('mousemove', drag);
         document.addEventListener('mouseup', stopDragging);
+
+        asciiContainer.addEventListener('touchstart', startTouch);
+        document.addEventListener('touchmove', moveTouch);
+        document.addEventListener('touchend', stopTouch);
+
+        function startTouch(e) {
+            e.preventDefault(); // Prevent default touch behavior
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX - offsetX;
+            startY = touch.clientY - offsetY;
+            asciiContainer.classList.add('grabbing');
+        }
+
+        function moveTouch(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Prevent scrolling while dragging
+            const touch = e.touches[0];
+            offsetX = touch.clientX - startX;
+            offsetY = touch.clientY - startY;
+            updateTransform();
+        }
+
+        function stopTouch() {
+            isDragging = false;
+            asciiContainer.classList.remove('grabbing');
+        }
 
         function startDragging(e) {
             isDragging = true;
